@@ -19,9 +19,9 @@ jobs:
         run: |
           mkdir -p output
           # ✅ 使用代理拉取
-          docker pull d.xax920.eu.org/tobias47n9e/y-websocket:latest
+          docker pull d.xax920.eu.org/ghcr.io/y-crdt/wy-websocket:latest
           # ✅ 打上正常标签
-          docker tag d.xax920.eu.org/tobias47n9e/y-websocket:latest yjs-websocket:latest
+          docker tag d.xax920.eu.org/ghcr.io/y-crdt/wy-websocket:latest yjs-websocket:latest
 
       - name: Export Docker image
         run: |
