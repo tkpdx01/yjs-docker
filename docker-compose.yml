@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  yjs:
+    image: ghcr.io/y-crdt/wy-websocket:latest
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 1235
+    ports:
+      - "1235:1235"
