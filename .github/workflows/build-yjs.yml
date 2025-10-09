@@ -23,8 +23,8 @@ jobs:
       - name: Pull and export image
         run: |
           mkdir -p output
-          docker pull ghcr.io/y-crdt/wy-websocket:latest
-          docker tag ghcr.io/y-crdt/wy-websocket:latest yjs:latest
+          docker pull tobias47n9e/y-websocket:latest
+          docker tag tobias47n9e/y-websocket:latest yjs:latest
           docker save yjs:latest -o output/yjs-image.tar
 
       - name: Upload image artifact
