@@ -1,4 +1,4 @@
-name: Build Y-WebSocket Docker Image (Proxy)
+name: Build Y-WebSocket Docker Image (Mirror Config)
 
 on:
   workflow_dispatch:
@@ -10,23 +10,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 可选：显示 docker 信息
-      - name: Check Docker Info
-        run: docker info
+      # 1️⃣ 配置 registry mirror
+      - name: Configure Docker registry mirror
+        run: |
+          echo '{ "registry-mirrors": ["https://d.xax920.eu.org"] }' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker info | grep -A 3 "Registry Mirrors"
 
-      # 拉取镜像时使用 d.xax920.eu.org 代理
-      - name: Pull image via proxy
+      # 2️⃣ 拉取公开镜像（来自 Docker Hub）
+      - name: Pull and export Y-WebSocket
         run: |
           mkdir -p output
-          # ✅ 使用代理拉取
-          docker pull d.xax920.eu.org/ghcr.io/y-crdt/wy-websocket:latest
-          # ✅ 打上正常标签
-          docker tag d.xax920.eu.org/ghcr.io/y-crdt/wy-websocket:latest yjs-websocket:latest
-
-      - name: Export Docker image
-        run: |
+          docker pull tobias47n9e/y-websocket:latest
+          docker tag tobias47n9e/y-websocket:latest yjs-websocket:latest
           docker save yjs-websocket:latest -o output/yjs-websocket.tar
 
+      # 3️⃣ 上传结果
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
