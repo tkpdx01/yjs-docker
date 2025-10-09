@@ -1,28 +1,22 @@
 name: Build Y-WebSocket Docker Image
 
 on:
-  workflow_dispatch:   # 手动触发（推荐）
-  # 如果想在 push 时自动触发，可加上：
-  # push:
-  #   branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
 
     steps:
-      # ① 检出当前仓库（保持 Actions 环境干净）
       - uses: actions/checkout@v4
 
-      # ② 检出 y-crdt/y-websocket 源码（官方仓库）
       - name: Checkout y-websocket source
         uses: actions/checkout@v4
         with:
           repository: y-crdt/y-websocket
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}   # ✅ 使用个人 PAT
           path: y-websocket
 
-      # ③ 安装 Node.js 和 pnpm
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,25 +27,21 @@ jobs:
         with:
           version: 9
 
-      # ④ 安装依赖
       - name: Install dependencies
         run: |
           cd y-websocket
           pnpm install
 
-      # ⑤ 构建 Docker 镜像
       - name: Build Docker image
         run: |
           cd y-websocket
           docker build -t yjs-websocket:latest .
 
-      # ⑥ 导出镜像为 tar 文件
       - name: Export Docker image
         run: |
           mkdir -p output
           docker save yjs-websocket:latest -o output/yjs-websocket.tar
 
-      # ⑦ 上传产物，供下载
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
