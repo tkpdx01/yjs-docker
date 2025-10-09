@@ -23,9 +23,9 @@ jobs:
         run: |
           mkdir -p output
           # 拉取基础镜像
-          docker pull ghcr.io/y-crdt/wy-websocket:latest
+          docker pull tobias47n9e/y-websocket:latest
           # 重新打标签（避免导出时文件名过长）
-          docker tag ghcr.io/y-crdt/wy-websocket:latest yjs:latest
+          docker tag tobias47n9e/y-websocket:latest
           # 导出为 tar 文件
           docker save yjs:latest -o output/yjs-image.tar
 
