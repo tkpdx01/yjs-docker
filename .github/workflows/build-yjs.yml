@@ -1,4 +1,4 @@
-name: Build Y-WebSocket Docker Image
+name: Build Y-WebSocket Docker Image (Public)
 
 on:
   workflow_dispatch:
@@ -10,36 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout y-websocket source
-        uses: actions/checkout@v4
+      - name: Log in to Docker Hub (optional, safe even if no secrets)
+        uses: docker/login-action@v3
         with:
-          repository: y-crdt/y-websocket
-          token: ${{ secrets.GH_PAT }}   # ✅ 使用个人 PAT
-          path: y-websocket
+          username: ${{ secrets.DOCKERHUB_USERNAME || '' }}
+          password: ${{ secrets.DOCKERHUB_TOKEN || '' }}
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
-      - name: Install dependencies
-        run: |
-          cd y-websocket
-          pnpm install
-
-      - name: Build Docker image
-        run: |
-          cd y-websocket
-          docker build -t yjs-websocket:latest .
-
-      - name: Export Docker image
+      - name: Pull public image
         run: |
           mkdir -p output
+          docker pull tobias47n9e/y-websocket:latest
+          docker tag tobias47n9e/y-websocket:latest yjs-websocket:latest
+
+      - name: Export Docker image to tar
+        run: |
           docker save yjs-websocket:latest -o output/yjs-websocket.tar
 
       - name: Upload artifact
