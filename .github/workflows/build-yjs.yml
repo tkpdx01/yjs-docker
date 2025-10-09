@@ -1,35 +1,31 @@
 name: Build YJS Docker Image
 
 on:
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-22.04
 
     steps:
-      # 1️⃣ 拉取代码
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2️⃣ 安装 Docker Compose 插件
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3️⃣ 构建 docker-compose 服务中的镜像
-      # （因为 yjs 使用的是远程镜像 ghcr.io/y-crdt/wy-websocket:latest）
-      # 如果你要构建自定义镜像，请在此目录中添加 Dockerfile
-      - name: Build container image tar
+      - name: Pull and export image
         run: |
           mkdir -p output
-          # 拉取基础镜像
-          docker pull tobias47n9e/y-websocket:latest
-          # 重新打标签（避免导出时文件名过长）
-          docker tag tobias47n9e/y-websocket:latest
-          # 导出为 tar 文件
+          docker pull ghcr.io/y-crdt/wy-websocket:latest
+          docker tag ghcr.io/y-crdt/wy-websocket:latest yjs:latest
           docker save yjs:latest -o output/yjs-image.tar
 
-      # 4️⃣ 上传 artifact 以便下载
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
